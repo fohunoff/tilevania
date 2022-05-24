@@ -10,12 +10,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float jumpSpeed = 20f;
     [SerializeField] float climbSpeed = 5f;
     [SerializeField] float defaultGravityScale = 8f;
+    [SerializeField] Vector2 deathKick = new Vector2(0f, 20f);
+
+    [SerializeField] GameObject bullet;
+    [SerializeField] Transform gun;
 
     Vector2 moveInput;
     Rigidbody2D myRigidbody;
     Animator myAnimatior;
     CapsuleCollider2D myBodyCollider;
     BoxCollider2D myFeetCollider;
+
+    bool isAlive = true;
 
     void Start()
     {
@@ -29,26 +35,37 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (!isAlive) { return; }
+
         Run();
         FlipSprite();
         ClimbLadder();
+
+        Die();
     }
 
     void OnMove(InputValue value)
     {
+        if (!isAlive) { return; }
         moveInput = value.Get<Vector2>();
-
-        Debug.Log(moveInput);
     }
 
     void OnJump(InputValue value)
     {
+        if (!isAlive) { return; }
         if (!myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground"))) { return; }
 
         if (value.isPressed)
         {
             myRigidbody.velocity += new Vector2 (0f, jumpSpeed);
         }
+    }
+
+    void OnFire(InputValue value)
+    {
+        if (!isAlive) { return; }
+        
+        Instantiate(bullet, gun.position, transform.rotation);
     }
 
     void Run()
@@ -94,5 +111,16 @@ public class PlayerMovement : MonoBehaviour
 
         bool isClimbing = Mathf.Abs(myRigidbody.velocity.y) > Mathf.Epsilon;
         myAnimatior.SetBool("isClimbing", isClimbing);
+    }
+
+    void Die()
+    {
+        if (myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemies", "Hazards")))
+        {
+            isAlive = false;
+            myAnimatior.SetTrigger("Dying");
+
+            myRigidbody.velocity = deathKick;
+        }
     }
 }
