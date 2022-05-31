@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 1696508378}
   m_Layer: 8
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -129,7 +129,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 422439309
-  m_SortingLayer: 7
+  m_SortingLayer: 8
   m_SortingOrder: 100
   m_Sprite: {fileID: -1315327373, guid: 2e792c903eb7fec46820026bd70f44f7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -252,3 +252,5 @@ MonoBehaviour:
   climbSpeed: 5
   defaultGravityScale: 8
   deathKick: {x: 0, y: 20}
+  bullet: {fileID: 525366611667666415, guid: a4973d899f9cb2e439c70a48eff5e751, type: 3}
+  gun: {fileID: 7232358724595026215}
