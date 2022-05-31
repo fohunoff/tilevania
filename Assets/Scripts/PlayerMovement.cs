@@ -76,6 +76,13 @@ public class PlayerMovement : MonoBehaviour
         Vector2 playerVelocity = new Vector2 (xVelocity, yVelocity);
         myRigidbody.velocity = playerVelocity;
 
+        // для фикса игры на геймпаде
+        if (Mathf.Abs(myRigidbody.velocity.x) < 0.02f)
+        {
+            myAnimatior.SetBool("isRunning", false);
+            return;
+        }
+
         bool isRunning = Mathf.Abs(myRigidbody.velocity.x) > Mathf.Epsilon;
         myAnimatior.SetBool("isRunning", isRunning);
     }
