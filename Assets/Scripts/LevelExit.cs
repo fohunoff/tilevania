@@ -8,10 +8,19 @@ public class LevelExit : MonoBehaviour
 {
     [SerializeField] float levelLoadDelay = 1f;
 
+    PlayerMovement player;
+
+    void Awake()
+    {
+        player = FindObjectOfType<PlayerMovement>();
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
         {
+            Debug.Log(other.name);
+            player.ExitLevel();
             StartCoroutine(LoadNextLevel());
         }
     }

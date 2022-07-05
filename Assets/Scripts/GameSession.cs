@@ -13,16 +13,23 @@ public class GameSession : MonoBehaviour
     [SerializeField] TextMeshProUGUI livesText;
     [SerializeField] TextMeshProUGUI scoreText;
 
+    static GameSession gameSession;
+
     void Awake()
     {
-        int numGameSession = FindObjectsOfType<GameSession>().Length;
-        
-        if (numGameSession > 1)
+        SingletonManager();
+    }
+
+    void SingletonManager()
+    {
+        if (gameSession != null)
         {
+            gameObject.SetActive(false);
             Destroy(gameObject);
         }
         else
         {
+            gameSession = this;
             DontDestroyOnLoad(gameObject);
         }
     }

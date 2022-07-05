@@ -10,10 +10,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float jumpSpeed = 20f;
     [SerializeField] float climbSpeed = 5f;
     [SerializeField] float defaultGravityScale = 8f;
+    [SerializeField] float restMovementDelay = 0.2f;
     [SerializeField] Vector2 deathKick = new Vector2(0f, 20f);
 
     [SerializeField] GameObject bullet;
     [SerializeField] Transform gun;
+
+    [SerializeField] AnimationCurve animationCurve; // для теста
 
     Vector2 moveInput;
     Rigidbody2D myRigidbody;
@@ -22,6 +25,9 @@ public class PlayerMovement : MonoBehaviour
     BoxCollider2D myFeetCollider;
 
     bool isAlive = true;
+    bool isExited = false;
+
+    bool isFiringActive = false;
 
     void Start()
     {
@@ -46,13 +52,14 @@ public class PlayerMovement : MonoBehaviour
 
     void OnMove(InputValue value)
     {
-        if (!isAlive) { return; }
+        if (!isAlive || isExited) { return; }
+        
         moveInput = value.Get<Vector2>();
     }
 
     void OnJump(InputValue value)
     {
-        if (!isAlive) { return; }
+        if (isExited || !isAlive) { return; }
         if (!myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground"))) { return; }
 
         if (value.isPressed)
@@ -63,9 +70,22 @@ public class PlayerMovement : MonoBehaviour
 
     void OnFire(InputValue value)
     {
-        if (!isAlive) { return; }
-        
+        if (isExited || !isAlive) { return; }
+
+        if (isFiringActive) { return; }
+
         Instantiate(bullet, gun.position, transform.rotation);
+        
+        isFiringActive = true;
+        myAnimatior.SetBool("isFiring", true);
+        StartCoroutine(StopFire());
+    }
+
+    IEnumerator StopFire()
+    {
+        yield return new WaitForSeconds(0.5f);
+        isFiringActive = false;
+        myAnimatior.SetBool("isFiring", false);
     }
 
     void Run()
@@ -120,6 +140,13 @@ public class PlayerMovement : MonoBehaviour
         myAnimatior.SetBool("isClimbing", isClimbing);
     }
 
+    public void ExitLevel()
+    {
+        isExited = true;
+
+        StartCoroutine(RestMovement());
+    }
+
     void Die()
     {
         if (myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemies", "Hazards")))
@@ -131,5 +158,11 @@ public class PlayerMovement : MonoBehaviour
 
             FindObjectOfType<GameSession>().ProcessPlayerDeath();
         }
+    }
+
+    IEnumerator RestMovement()
+    {
+        yield return new WaitForSeconds(restMovementDelay);
+        moveInput = new Vector2(0f, 0f);
     }
 }
